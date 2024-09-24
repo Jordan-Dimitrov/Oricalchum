@@ -6,10 +6,14 @@ use oricalchum::{Actor, ActorSystem, Context};
 
 #[tokio::main]
 async fn main() {
-    let addr1 = ActorSystem::spawn_actor(TestActor { name: String::from("actor1") });
-    let addr2 = ActorSystem::spawn_actor(TestActor { name: String::from("actor2") });
+    let actor1 = TestActor { name: String::from("actor1") };
+    let actor2 = TestActor { name: String::from("actor2") };
+
+    let addr1 = ActorSystem::spawn_actor(actor1);
+    let addr2 = ActorSystem::spawn_actor(actor2);
 
     addr1.send(Test::PrintOk(String::from("Valjo"))).await;
+    
     addr2.send(Test::PrintErr(String::from("Nije valjo"), 2)).await;
 
     sleep(Duration::from_secs(1)).await;
@@ -43,7 +47,7 @@ impl Actor for TestActor {
             }
         }
 
-        sleep(Duration::from_millis(1)).await;
+        sleep(Duration::from_nanos(1)).await;
         exit(1);
     }
 }
