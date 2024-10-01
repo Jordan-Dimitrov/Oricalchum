@@ -9,8 +9,8 @@ async fn main() {
     let actor1 = TestActor { name: String::from("actor1") };
     let actor2 = TestActor { name: String::from("actor2") };
 
-    let addr1 = ActorSystem::spawn_actor(actor1, 16);
-    let addr2 = ActorSystem::spawn_actor(actor2, 16);
+    let addr1 = ActorSystem::spawn_actor(actor1, 16).await;
+    let addr2 = ActorSystem::spawn_actor(actor2, 16).await;
 
     addr1.send(Test::PrintOk(String::from("Valjo"))).await;
     
@@ -53,5 +53,9 @@ impl Actor for TestActor {
 
         ctx.terminate().await;
         //exit(1);
+    }
+
+    async fn post_stop(&mut self) {
+        println!("treba da odmori");
     }
 }

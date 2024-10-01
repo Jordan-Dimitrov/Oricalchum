@@ -12,6 +12,12 @@ impl<T: Send + 'static> Message for T {}
 pub trait Actor: Send + Sized + 'static{
     type Msg: Message;
     async fn handle(&mut self, msg: Self::Msg, ctx: &mut Context<Self>);
+    async fn pre_start(&mut self) {
+
+    }
+    async fn post_stop(&mut self) {
+
+    }
 }
 
 #[derive(PartialEq, Debug, Clone)]
@@ -85,19 +91,21 @@ impl<A: Actor> Clone for Addr<A> {
 
 pub struct ActorSystem;
 impl ActorSystem {
-    pub fn spawn_actor<A: Actor>(mut actor: A, mailbox_size: usize) -> Addr<A> {
+    pub async fn spawn_actor<A: Actor>(mut actor: A, mailbox_size: usize) -> Addr<A> {
         let (tx, mut rx) = mpsc::channel::<A::Msg>(mailbox_size);
         let addr = Addr { sender: tx.clone() };
 
         let mut ctx = Context::new(addr.clone(), mailbox_size);
 
         task::spawn(async move {
+            actor.pre_start().await;
             while let Some(msg) = rx.recv().await {
                 let state = ctx.get_state().await;
 
                 match state {
                     ActorState::Running => actor.handle(msg, &mut ctx).await,
                     ActorState::Terminated => {
+                        actor.post_stop().await;
                         drop(actor);
                         break;
                     }
