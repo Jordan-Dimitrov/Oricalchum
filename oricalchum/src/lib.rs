@@ -9,7 +9,7 @@ pub trait Message: Send + 'static {}
 impl<T: Send + 'static> Message for T {}
 
 #[async_trait]
-pub trait Actor: Send + Sized + 'static{
+pub trait Actor: Send + Sized + 'static {
     type Msg: Message;
     async fn handle(&mut self, msg: Self::Msg, ctx: &mut Context<Self>);
     async fn pre_start(&mut self) {
@@ -116,3 +116,5 @@ impl ActorSystem {
         addr
     }
 }
+
+pub trait TrackActor: Actor{}

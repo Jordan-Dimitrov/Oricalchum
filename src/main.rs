@@ -1,8 +1,9 @@
-use std::process::exit;
+use oricalchum::TrackActor;
 use std::time::Duration;
 use async_trait::async_trait;
 use tokio::time::sleep;
-use oricalchum::{Actor, ActorSystem, Addr, Context};
+use oricalchum::{Actor, ActorSystem, Context};
+use oricalchum_derive::TrackActor;
 
 #[tokio::main]
 async fn main() {
@@ -28,6 +29,7 @@ pub enum Test {
     PrintErr(String, i32),
 }
 
+#[derive(TrackActor)]
 pub struct TestActor {
     pub name: String,
 }

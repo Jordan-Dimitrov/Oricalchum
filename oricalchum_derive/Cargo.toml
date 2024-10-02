@@ -1,13 +1,15 @@
-workspace = { members = ["oricalchum", "oricalchum_derive"] }
 [package]
-name = "oricalchum_"
+name = "oricalchum_derive"
 version = "0.1.0"
 edition = "2021"
 
+[lib]
+proc-macro = true
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-async-trait = "0.1.82"
 tokio = { version = "1.40.0", features = ["full"] }
-oricalchum = {path = "oricalchum"}
-oricalchum_derive = {path = "oricalchum_derive"}
+async-trait = "0.1.82"
+syn = "2.0"
+quote = "1.0"
+oricalchum = {path = "../oricalchum"}
