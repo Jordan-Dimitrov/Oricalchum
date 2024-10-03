@@ -7,8 +7,8 @@ use oricalchum_derive::TrackActor;
 
 #[tokio::main]
 async fn main() {
-    let actor1 = TestActor { name: String::from("actor1") };
-    let actor2 = TestActor { name: String::from("actor2") };
+    let actor1 = TestActor { name: String::from("actor1"), value: String::from("test1") };
+    let actor2 = TestActor { name: String::from("actor2"), value: String::from("test2") };
 
     let addr1 = ActorSystem::spawn_actor(actor1, 16).await;
     let addr2 = ActorSystem::spawn_actor(actor2, 16).await;
@@ -32,6 +32,7 @@ pub enum Test {
 #[derive(TrackActor)]
 pub struct TestActor {
     pub name: String,
+    pub value: String
 }
 
 #[async_trait]
@@ -41,7 +42,9 @@ impl Actor for TestActor {
     async fn handle(&mut self, msg: Self::Msg, ctx: &mut Context<Self>) {
         //let addr3 = ActorSystem::spawn_actor(TestActor { name: String::from("actor3") } , 16);
         //ctx.send_to(addr3, Test::PrintOk(String::from("Valjo"))).await;
+        //self.test().await;
 
+        self.log();
         match msg {
             Test::PrintOk(text) => {
                 println!("{} {}", self.name, text);

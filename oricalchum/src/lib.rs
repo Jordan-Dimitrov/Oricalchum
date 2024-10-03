@@ -117,4 +117,51 @@ impl ActorSystem {
     }
 }
 
-pub trait TrackActor: Actor{}
+pub trait TrackActor: Actor {
+    fn log(&self);
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[derive(Debug, Clone)]
+    struct TestMessage {
+        name: String
+    }
+
+    struct TestActor {
+    }
+
+    #[async_trait]
+    impl Actor for TestActor {
+        type Msg = TestMessage;
+
+        async fn handle(&mut self, msg: Self::Msg, _ctx: &mut Context<Self>) {
+            println!("{:?}", msg.name);
+        }
+
+        async fn pre_start(&mut self) {
+            println!("Actor is starting");
+        }
+
+        async fn post_stop(&mut self) {
+            println!("Actor is stopping");
+        }
+    }
+
+    #[tokio::test]
+    async fn test_actor_state() {
+        let actor = TestActor {};
+
+        let addr = ActorSystem::spawn_actor(actor, 10).await;
+
+        let ctx = Context::new(addr.clone(), 10);
+
+        assert_eq!(ctx.get_state().await, ActorState::Running);
+
+        ctx.terminate().await;
+
+        assert_eq!(ctx.get_state().await, ActorState::Terminated);
+    }
+}
