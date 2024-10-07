@@ -2,7 +2,7 @@ use oricalchum::TrackActor;
 use std::time::Duration;
 use async_trait::async_trait;
 use tokio::time::sleep;
-use oricalchum::{Actor, ActorSystem, Context};
+use oricalchum::*;
 use oricalchum_derive::TrackActor;
 
 #[tokio::main]
