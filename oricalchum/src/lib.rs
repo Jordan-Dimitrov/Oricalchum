@@ -22,12 +22,6 @@ pub trait Actor: Send + Sized + 'static {
     }
 }
 
-#[derive(PartialEq, Debug, Clone)]
-pub enum ActorState {
-    Running,
-    Terminated
-}
-
 //#[derive(Clone)]
 pub struct Addr<A: Actor> {
     sender: mpsc::Sender<A::Msg>,

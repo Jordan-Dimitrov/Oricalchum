@@ -1,12 +1,18 @@
 use std::time::Duration;
 use tokio::sync::Mutex;
 use tokio::time::sleep;
-use crate::{Actor, ActorState, Addr};
+use crate::{Actor, Addr};
 
 pub struct Context<A: Actor> {
-    pub addr: Addr<A>,
+    addr: Addr<A>,
     mailbox_size: usize,
     state: Mutex<ActorState>
+}
+
+#[derive(PartialEq, Debug, Clone)]
+pub enum ActorState {
+    Running,
+    Terminated
 }
 
 impl<A: Actor> Context<A> {

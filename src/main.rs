@@ -17,7 +17,7 @@ async fn main() {
     
     addr2.send(Test::PrintErr(String::from("Nije valjo"), 2)).await;
 
-    addr2.send(Test::PrintErr(String::from("Nije valjo"), 2)).await;
+    addr2.send(Test::PrintOk(String::from("Valjo"))).await;
 
     sleep(Duration::from_secs(1)).await;
 }
@@ -51,12 +51,12 @@ impl Actor for TestActor {
             }
             Test::PrintErr(text, b) => {
                 println!("{} {}", text, b);
+                ctx.terminate().await;
             }
         }
 
         sleep(Duration::from_nanos(1)).await;
 
-        ctx.terminate().await;
         //exit(1);
     }
 
