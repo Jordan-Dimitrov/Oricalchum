@@ -29,8 +29,14 @@ pub struct Addr<A: Actor> {
 
 impl<A: Actor> Addr<A> {
     pub async fn send(&self, msg: A::Msg) {
-        self.sender.send(msg).await.expect("should not fail");
+        self.sender.send(msg).await.expect("Should not fail");
     }
+
+    pub fn new(sender: mpsc::Sender<A::Msg>) -> Self
+    {
+        Addr{ sender }
+    }
+
 }
 
 impl<A: Actor> Clone for Addr<A> {
@@ -64,11 +70,11 @@ mod tests {
         }
 
         async fn pre_start(&mut self) {
-            println!("Actor is starting");
+            println!("Starting");
         }
 
         async fn post_stop(&mut self) {
-            println!("Actor is stopping");
+            println!("Stooped");
         }
     }
 
@@ -78,12 +84,12 @@ mod tests {
 
         let addr = ActorSystem::spawn_actor(actor, 10).await;
 
-        let ctx = Context::new(addr.clone(), 10);
+        let mut ctx = Context::new(addr.clone(), 10);
 
-        assert_eq!(ctx.get_state().await, ActorState::Running);
+        assert_eq!(ctx.get_state(), ActorState::Running);
 
-        ctx.terminate().await;
+        ctx.terminate();
 
-        assert_eq!(ctx.get_state().await, ActorState::Terminated);
+        assert_eq!(ctx.get_state(), ActorState::Terminated);
     }
 }

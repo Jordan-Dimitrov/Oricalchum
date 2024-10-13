@@ -1,12 +1,11 @@
 use std::time::Duration;
-use tokio::sync::Mutex;
 use tokio::time::sleep;
 use crate::{Actor, Addr};
 
 pub struct Context<A: Actor> {
     addr: Addr<A>,
     mailbox_size: usize,
-    state: Mutex<ActorState>
+    state: ActorState
 }
 
 #[derive(PartialEq, Debug, Clone)]
@@ -17,13 +16,12 @@ pub enum ActorState {
 
 impl<A: Actor> Context<A> {
     pub fn new(addr: Addr<A>, mailbox_size: usize) -> Self {
-        Self { addr, mailbox_size, state: Mutex::new(ActorState::Running) }
+        Self { addr, mailbox_size, state: ActorState::Running }
     }
 
     pub async fn send(&self, msg: A::Msg) {
-        let state = self.state.lock().await;
 
-        if *state == ActorState::Running {
+        if self.state == ActorState::Running {
             self.addr.send(msg).await;
         } else {
             sleep(Duration::from_millis(1)).await;
@@ -31,9 +29,8 @@ impl<A: Actor> Context<A> {
     }
 
     pub async fn send_to<B: Actor>(&self, addr: Addr<B>, msg: B::Msg) {
-        let state = self.state.lock().await;
 
-        if *state == ActorState::Running {
+        if self.state == ActorState::Running {
             addr.send(msg).await;
         } else {
             sleep(Duration::from_millis(1)).await;
@@ -44,13 +41,11 @@ impl<A: Actor> Context<A> {
         self.mailbox_size
     }
 
-    pub async fn terminate(&self) {
-        let mut state = self.state.lock().await;
-        *state = ActorState::Terminated;
+    pub fn terminate(&mut self) {
+        self.state = ActorState::Terminated;
     }
 
-    pub async fn get_state(&self) -> ActorState{
-        let state = self.state.lock().await;
-        state.clone()
+    pub fn get_state(&self) -> ActorState{
+        self.state.clone()
     }
 }
