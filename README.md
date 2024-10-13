@@ -1,4 +1,6 @@
 # Oricalchum
+[![CI](https://github.com/Jordan-Dimitrov/Oricalchum/actions/workflows/ci.yml/badge.svg?event=push)](https://github.com/Jordan-Dimitrov/Oricalchum/actions/workflows/ci.yml)
+
 A lightweight actor library, allowing for the creation and management of actors in a concurrent environment. 
 
 ## Features
