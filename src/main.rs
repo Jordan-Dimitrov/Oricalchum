@@ -8,16 +8,13 @@ use oricalchum_derive::TrackActor;
 #[tokio::main]
 async fn main() {
     let actor1 = TestActor { name: String::from("actor1"), value: String::from("test1") };
-    let actor2 = TestActor { name: String::from("actor2"), value: String::from("test2") };
-
     let addr1 = ActorSystem::spawn_actor(actor1, 16).await;
+
+    let actor2 = TestParentActor { name: String::from("actor2"), child:addr1.clone() };
     let addr2 = ActorSystem::spawn_actor(actor2, 16).await;
 
-    addr1.send(Test::PrintOk(String::from("Ok"))).await;
-    
-    addr2.send(Test::PrintErr(String::from("Error"), 2)).await;
-
     addr2.send(Test::PrintOk(String::from("Ok"))).await;
+    addr2.send(Test::PrintErr(String::from("Error"), 2)).await;
 
     sleep(Duration::from_secs(1)).await;
 }
@@ -29,10 +26,38 @@ pub enum Test {
     PrintErr(String, i32),
 }
 
-#[derive(TrackActor)]
+#[derive(TrackActor,Debug)]
 pub struct TestActor {
     pub name: String,
-    pub value: String
+    pub value: String,
+}
+
+#[derive(TrackActor,Debug)]
+pub struct TestParentActor {
+    pub name: String,
+    pub child: Addr<TestActor>
+}
+
+#[async_trait]
+impl Actor for TestParentActor {
+    type Msg = Test;
+
+    async fn handle(&mut self, msg: Self::Msg, ctx: &mut Context<Self>) {
+        self.log();
+
+        match msg {
+            Test::PrintOk(text) => {
+                ctx.send_to(self.child.clone(), Test::PrintOk(text)).await
+            }
+            Test::PrintErr(text, b) => {
+                ctx.send_to(self.child.clone(), Test::PrintErr(text, b)).await
+            }
+        }
+    }
+
+    async fn post_stop(&mut self) {
+        println!("Stopped");
+    }
 }
 
 #[async_trait]
@@ -41,6 +66,7 @@ impl Actor for TestActor {
 
     async fn handle(&mut self, msg: Self::Msg, ctx: &mut Context<Self>) {
         self.log();
+
         match msg {
             Test::PrintOk(text) => {
                 println!("{} {}", self.name, text);
@@ -50,8 +76,6 @@ impl Actor for TestActor {
                 ctx.terminate();
             }
         }
-
-        sleep(Duration::from_nanos(1)).await;
     }
 
     async fn post_stop(&mut self) {
