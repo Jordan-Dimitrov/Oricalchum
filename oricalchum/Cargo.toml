@@ -1,6 +1,10 @@
 [package]
 name = "oricalchum"
 version = "0.1.0"
+authors = ["Jordan Dimitrov"]
+description = "A lightweight actor model."
+license = "MIT"
+repository = "https://github.com/Jordan-Dimitrov/Oricalchum"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
