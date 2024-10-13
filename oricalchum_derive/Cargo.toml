@@ -16,4 +16,4 @@ tokio = { version = "1.40.0", features = ["full"] }
 async-trait = "0.1.82"
 syn = "2.0"
 quote = "1.0"
-oricalchum = {path = "../oricalchum"}
+oricalchum = { version = "0.1.0", path = "../oricalchum" }
