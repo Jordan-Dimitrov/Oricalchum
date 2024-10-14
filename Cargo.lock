@@ -550,7 +550,7 @@ dependencies = [
 
 [[package]]
 name = "oricalchum"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "async-trait",
  "tokio",
@@ -569,7 +569,7 @@ dependencies = [
 
 [[package]]
 name = "oricalchum_derive"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "async-trait",
  "oricalchum",

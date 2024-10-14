@@ -1,6 +1,6 @@
 [package]
 name = "oricalchum"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Jordan Dimitrov"]
 description = "A lightweight actor model"
 license = "MIT"
