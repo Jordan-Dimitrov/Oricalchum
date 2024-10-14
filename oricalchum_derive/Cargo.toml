@@ -2,7 +2,7 @@
 name = "oricalchum_derive"
 version = "0.1.0"
 authors = ["Jordan Dimitrov"]
-description = "A lightweight actor model."
+description = "Procedural macros for oricalchum"
 license = "MIT"
 repository = "https://github.com/Jordan-Dimitrov/Oricalchum"
 edition = "2021"
